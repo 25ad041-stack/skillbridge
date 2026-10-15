@@ -1,0 +1,29 @@
+{% extends "skills/base.html" %}
+{% block title %}SkillBridge AI — learn together{% endblock %}
+{% block content %}
+<section class="hero wrap">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="eyebrow-dot"></span> YOUR CAMPUS, CONNECTED BY CURIOSITY</span>
+    <h1>Share what you know.<br><span class="gradient-text">Learn what’s next.</span></h1>
+    <p class="hero-lead">Find a learning partner right on campus. Trade skills, make progress together, and turn what you know into someone else’s next big thing.</p>
+    <div class="hero-actions">
+      {% if user.is_authenticated %}<a class="button" href="{% url 'dashboard' %}">Go to your dashboard <span aria-hidden="true">→</span></a>{% else %}<a class="button" href="{% url 'register' %}">Get started — it’s free <span aria-hidden="true">→</span></a><a class="button button-light" href="{% url 'login' %}">Log in</a>{% endif %}
+    </div>
+    <div class="hero-proof"><div class="avatar-stack"><span>M</span><span>A</span><span>J</span><span>+</span></div><p><strong>{{ skill_count }} skills</strong> waiting to be shared</p></div>
+  </div>
+  <div class="hero-art" aria-label="Illustration showing peer learning and skill exchange">
+    <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+    <div class="art-card art-card-python"><span class="art-icon purple">Py</span><div><strong>Python basics</strong><small>offered by Maya</small></div><span class="art-arrow">↗</span></div>
+    <div class="art-center"><span class="center-spark">✳</span><span>learn<br><b>together</b></span></div>
+    <div class="art-card art-card-design"><span class="art-icon blue">✦</span><div><strong>UI design</strong><small>your next skill?</small></div><span class="art-arrow">↗</span></div>
+    <div class="art-note"><span>✺</span> Small steps,<br>big growth.</div>
+  </div>
+</section>
+<section class="value-section"><div class="wrap"><div class="section-heading centered"><span class="eyebrow">A BETTER WAY TO LEARN</span><h2>Good things happen when<br>students learn together.</h2></div>
+  <div class="feature-grid">
+    <article class="feature-card"><span class="feature-icon lilac">⌕</span><h3>Find your people</h3><p>Explore skills offered by students who are ready to help you grow.</p></article>
+    <article class="feature-card"><span class="feature-icon sky">✳</span><h3>Matches with meaning</h3><p>Clear, local matching scores show why a learning partner fits your goals.</p></article>
+    <article class="feature-card"><span class="feature-icon peach">↗</span><h3>See your progress</h3><p>Turn your learning goal into milestones, sessions, and rewarding progress.</p></article>
+  </div></div></section>
+<section class="bottom-cta wrap"><div><span class="eyebrow">YOUR NEXT SKILL STARTS HERE</span><h2>What could you learn<br>from a fellow student?</h2></div><a class="button" href="{% url 'register' %}">Find your learning partner <span aria-hidden="true">→</span></a></section>
+{% endblock %}

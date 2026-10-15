@@ -1,0 +1,33 @@
+{% extends "skills/base.html" %}
+{% block title %}Explore courses and skills · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap"><div><span class="eyebrow">YOUR CAMPUS LEARNING CATALOG</span><h1>Explore and learn <span class="gradient-text">something new.</span></h1><p>Choose a course, pick your current level, and work through its syllabus at your own pace.</p></div><a class="button button-light" href="{% url 'my_skills' %}">Manage my skills</a></section>
+<section class="wrap">
+  <form method="get" class="filter-bar">
+    <label class="search-field"><span>⌕</span><input type="search" name="q" value="{{ query }}" placeholder="Search courses or student skills…" aria-label="Search courses or skills"></label>
+    <select name="category" aria-label="Filter by category"><option value="">All categories</option>{% for item in categories %}<option value="{{ item }}" {% if selected_category == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select>
+    <select name="level" aria-label="Filter student skills by level"><option value="">All levels</option>{% for value,label in levels %}<option value="{{ value }}" {% if selected_level == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    <select name="mode" aria-label="Filter student skills by preference"><option value="">Teach or learn</option>{% for value,label in modes %}<option value="{{ value }}" {% if selected_mode == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    <button class="button button-small" type="submit">Search</button>
+  </form>
+  <div class="listing-heading"><div><span class="eyebrow">SELF-PACED COURSES</span><h2>Course catalog</h2></div><span>{{ course_count }} course{{ course_count|pluralize }}</span></div>
+  <div class="course-grid">
+    {% for course in courses %}
+      <article class="course-card">
+        <div class="course-card-heading"><span class="course-icon">{{ course.icon }}</span><span class="category-tag">{{ course.category }}</span></div>
+        <h3>{{ course.name }}</h3>
+        <p>{{ course.description }}</p>
+        <div class="course-card-meta"><span>{{ course.lesson_count }} syllabus lessons</span><span>{{ course.completed_count }}/{{ course.lesson_count }} completed</span></div>
+        <div class="progress-track"><span style="width:{{ course.progress_percent }}%"></span></div>
+        <a class="button button-light button-full" href="{% url 'course_detail' course.slug %}">Open levels &amp; syllabus →</a>
+      </article>
+    {% empty %}
+      <div class="empty-state full-width"><h3>No course matches this filter.</h3><p>Choose another category or clear the search to browse all courses.</p><a class="text-link" href="{% url 'skill_list' %}">Show all courses →</a></div>
+    {% endfor %}
+  </div>
+</section>
+<section class="peer-section"><div class="wrap">
+  <div class="listing-heading"><div><span class="eyebrow">LEARN WITH OTHER STUDENTS</span><h2>Peer skill exchange</h2></div><span>{{ skills|length }} listing{{ skills|length|pluralize }}</span></div>
+  <div class="skill-grid">{% for skill in skills %}<article class="skill-card"><div class="skill-card-top"><span class="category-tag">{{ skill.category }}</span><span class="level-dot level-{{ skill.level }}">{{ skill.get_level_display }}</span></div><h3>{{ skill.name }}</h3><p>{{ skill.description|truncatewords:24 }}</p><div class="skill-owner"><span class="person-avatar">{{ skill.owner.first_name|default:skill.owner.username|first|upper }}</span><div><a href="{% url 'student_profile' skill.owner.username %}">{{ skill.owner.get_full_name|default:skill.owner.username }}</a><small>{{ skill.owner.student_profile.college|default:"Student" }}</small></div></div><div class="skill-card-bottom"><span class="pill pill-{{ skill.mode }}">{{ skill.get_mode_display }}</span>{% if skill.mode == "teach" %}<a class="text-link" href="{% url 'request_create' skill.pk %}">Request to learn →</a>{% else %}<span class="muted small">Looking for a teacher</span>{% endif %}</div></article>{% empty %}<div class="empty-state full-width"><p>No student listings match those filters yet.</p><a class="button button-light" href="{% url 'skill_create' %}">Share a skill</a></div>{% endfor %}</div>
+</div></section>
+{% endblock %}

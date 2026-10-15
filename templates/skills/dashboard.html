@@ -1,0 +1,30 @@
+{% extends "skills/base.html" %}
+{% block title %}Your dashboard · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap"><div><span class="eyebrow">YOUR LEARNING SPACE</span><h1>Hey {{ user.first_name|default:user.username }}, <span class="gradient-text">what’s next?</span></h1><p>Here’s your learning journey at a glance.</p></div><a class="button" href="{% url 'skill_create' %}">＋ Share a skill</a></section>
+<section class="wrap stats-grid">
+  <article class="stat-card"><span class="stat-icon lilac">✦</span><div><strong>{{ skill_count }}</strong><span>Skills shared</span></div><a href="{% url 'my_skills' %}" aria-label="View your skills">↗</a></article>
+  <article class="stat-card"><span class="stat-icon sky">↗</span><div><strong>{{ request_count }}</strong><span>Learning requests</span></div><a href="{% url 'requests' %}" aria-label="View requests">↗</a></article>
+  <article class="stat-card"><span class="stat-icon peach">◷</span><div><strong>{{ upcoming_count }}</strong><span>Upcoming sessions</span></div><a href="{% url 'sessions' %}" aria-label="View sessions">↗</a></article>
+  <article class="stat-card"><span class="stat-icon mint">★</span><div><strong>{{ profile.points }}</strong><span>Points earned</span></div><a href="{% url 'leaderboard' %}" aria-label="View leaderboard">↗</a></article>
+</section>
+<section class="wrap dashboard-grid">
+  <div class="dashboard-main">
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">COMING UP</span><h2>Your learning sessions</h2></div><a class="text-link" href="{% url 'sessions' %}">All sessions →</a></div>
+      {% for session in upcoming %}<div class="session-row"><div class="date-chip"><strong>{{ session.starts_at|date:"d" }}</strong><span>{{ session.starts_at|date:"M" }}</span></div><div class="grow"><strong>{{ session.learning_request.skill.name }}</strong><p>with {% if session.learning_request.learner == user %}{{ session.learning_request.teacher.get_full_name|default:session.learning_request.teacher.username }}{% else %}{{ session.learning_request.learner.get_full_name|default:session.learning_request.learner.username }}{% endif %}</p></div><span class="time-label">{{ session.starts_at|date:"g:i A" }}</span></div>
+      {% empty %}<div class="empty-state"><span>◷</span><p>No upcoming sessions yet. Send a request or schedule your next lesson.</p><a class="text-link" href="{% url 'skill_list' %}">Explore skills →</a></div>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">KEEP IT GOING</span><h2>Your learning progress</h2></div><a class="text-link" href="{% url 'progress' %}">View all →</a></div>
+      {% for item in progress_items %}<div class="progress-item"><div class="progress-label"><strong>{{ item.skill_name }}</strong><span>{{ item.percent }}%</span></div><div class="progress-track"><span style="width:{{ item.percent }}%"></span></div></div>{% empty %}<div class="empty-state"><p>Add a learning goal to track your progress and build a roadmap.</p><a class="text-link" href="{% url 'progress' %}">Set a learning goal →</a></div>{% endfor %}
+    </div>
+  </div>
+  <aside class="dashboard-side">
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">GOOD FITS FOR YOU</span><h2>Recommended partners</h2></div></div>
+      {% for item in recommendations %}<div class="match-mini"><span class="person-avatar">{{ item.student.first_name|default:item.student.username|first|upper }}</span><div class="grow"><strong>{{ item.student.get_full_name|default:item.student.username }}</strong><p>{{ item.skill.name }} · {{ item.score }}% match</p></div></div>{% empty %}<p class="muted small">Add a skill you want to learn to get personalized matches.</p>{% endfor %}
+      <a class="button button-light button-full" href="{% url 'recommendations' %}">See all matches</a>
+    </div>
+    <div class="points-card"><span class="points-spark">✳</span><span class="eyebrow">YOUR COMMUNITY IMPACT</span><h2>{{ profile.points }} points</h2><p>Every completed learning session earns points for both students.</p><a href="{% url 'rewards' %}">Explore your rewards →</a></div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">BADGES</span><h2>Little wins</h2></div><a class="text-link" href="{% url 'rewards' %}">All rewards →</a></div>{% for earned in badges %}<div class="badge-row"><span>{{ earned.badge.icon }}</span><div><strong>{{ earned.badge.name }}</strong><small>{{ earned.badge.description }}</small></div></div>{% empty %}<p class="muted small">Complete a session or milestone to start earning badges.</p>{% endfor %}</div>
+  </aside>
+</section>
+{% endblock %}

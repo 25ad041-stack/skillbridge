@@ -1,0 +1,47 @@
+{% extends "skills/base.html" %}
+{% block title %}Account settings · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap">
+  <div><span class="eyebrow">YOUR PREFERENCES</span><h1>Account <span class="gradient-text">settings.</span></h1><p>Review your profile and choose what information helps other students find you.</p></div>
+</section>
+<section class="wrap settings-layout">
+  <div class="panel settings-card">
+    <div class="panel-heading"><div><span class="eyebrow">PROFILE DISCOVERY</span><h2>Your interests</h2></div><span class="settings-icon">✳</span></div>
+    <p class="muted">Your interests help SkillBridge suggest relevant learning partners. Only the interests you enter are shown on your student profile.</p>
+    <div class="settings-value">{% if profile.interests %}{{ profile.interests }}{% else %}<span class="muted">No interests added yet.</span>{% endif %}</div>
+    <a class="button button-light button-small" href="{% url 'profile_edit' %}">Edit profile interests</a>
+  </div>
+  <div class="panel settings-card">
+    <div class="panel-heading"><div><span class="eyebrow">SIGN-IN DETAILS</span><h2>Account security</h2></div><span class="settings-icon">⌑</span></div>
+    <div class="settings-detail"><span>Email</span><strong>{{ user.email|default:"No email added" }}</strong></div>
+    <div class="settings-detail"><span>Username</span><strong>{{ user.username }}</strong></div>
+    <a class="button button-light button-small" href="{% url 'password_change' %}">Change password</a>
+  </div>
+  <div class="panel settings-card notification-settings">
+    <div class="panel-heading"><div><span class="eyebrow">YOUR ALERTS</span><h2>Notification preferences</h2></div><span class="settings-icon">♫</span></div>
+    <p class="muted">Choose whether SkillBridge saves in-app alerts for your account and set the sound level for new alerts while the site is open.</p>
+    <form method="post" class="notification-preferences-form">
+      {% csrf_token %}
+      <label class="preference-toggle" for="{{ notification_form.notifications_enabled.id_for_label }}">
+        <span><strong>In-app notifications</strong><small>Requests, session updates, ratings, and learning rewards</small></span>
+        {{ notification_form.notifications_enabled }}
+        <span class="toggle-track" aria-hidden="true"><span></span></span>
+      </label>
+      {% if notification_form.notifications_enabled.errors %}<div class="field-error">{{ notification_form.notifications_enabled.errors }}</div>{% endif %}
+      <div class="volume-control">
+        <label for="{{ notification_form.notification_volume.id_for_label }}"><strong>Notification sound</strong><span><output id="volume-value">{{ notification_form.notification_volume.value|default:45 }}</output>%</span></label>
+        {{ notification_form.notification_volume }}
+        <div class="volume-hints"><span>Mute</span><span>Louder</span></div>
+        {% if notification_form.notification_volume.errors %}<div class="field-error">{{ notification_form.notification_volume.errors }}</div>{% endif %}
+        <p class="help-text">Set volume to 0 to mute. Sound plays for new alerts while this site is open; your browser may require one click on the page before it allows sound.</p>
+      </div>
+      <div class="row-actions"><button class="button button-small" type="submit">Save notification settings</button><button class="button button-light button-small" type="button" data-test-notification-sound>Test sound</button></div>
+    </form>
+  </div>
+  <div class="panel settings-card">
+    <div class="panel-heading"><div><span class="eyebrow">YOUR ACCOUNT</span><h2>Manage your account</h2></div><span class="settings-icon">▤</span></div>
+    <p class="muted">Review your account details, points, and links for updating your student profile.</p>
+    <a class="button button-light button-small" href="{% url 'manage_account' %}">Open account management</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "skills/base.html" %}
+{% block title %}{{ title }} · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="form-section wrap"><div class="form-intro"><span class="eyebrow">SKILLBRIDGE COMMUNITY</span><h1>{{ title }}</h1><p>{{ subtitle|default:"A few details are all it takes to keep learning moving forward." }}</p></div><div class="form-card">
+  {% if "account" in title|lower %}<h2>Join SkillBridge AI</h2><p class="muted">Create a student profile to share and discover skills.</p>{% endif %}
+  <form method="post" class="stack-form">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}{% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}</div>{% endfor %}
+    <button class="button button-full" type="submit">Save and continue <span aria-hidden="true">→</span></button>
+  </form>
+  {% if "account" in title|lower %}
+    <div class="auth-divider"><span>or</span></div>
+    <button class="google-button" type="button" data-google-signin><span class="google-g" aria-hidden="true">G</span>Continue with Google</button>
+    <p class="google-note" data-google-note hidden>Google sign-in is not connected yet. This button is a visual preview; Google OAuth setup is required to enable sign-in.</p>
+  {% endif %}
+</div></section>
+{% endblock %}

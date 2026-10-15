@@ -1,0 +1,6 @@
+{% extends "skills/base.html" %}
+{% block title %}Notifications · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap"><div><span class="eyebrow">A LITTLE NUDGE</span><h1>Your <span class="gradient-text">notifications.</span></h1><p>Request updates, session plans, and notes from your learning community.</p></div></section>
+<section class="wrap"><div class="panel notification-list">{% for item in notifications %}<article class="notification-row {% if not item.is_read %}notification-unread{% endif %}"><span class="notification-dot"></span><div class="grow"><p>{{ item.message }}</p><small>{{ item.created_at|date:"M d, Y · g:i A" }}</small></div>{% if item.url %}<a class="text-link" href="{{ item.url }}">Open →</a>{% endif %}</article>{% empty %}<div class="empty-state"><h3>You're all caught up.</h3><p>We'll let you know when something happens.</p></div>{% endfor %}</div></section>
+{% endblock %}

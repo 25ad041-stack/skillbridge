@@ -1,0 +1,74 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Learn together with SkillBridge AI, a student-powered skill-sharing community.">
+  <title>{% block title %}SkillBridge AI{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <script defer src="{% static 'js/app.js' %}"></script>
+</head>
+<body
+  {% if user.is_authenticated %}
+    data-notification-status-url="{% url 'notification_status' %}"
+    data-latest-notification-id="{{ latest_notification_id }}"
+    data-notification-volume="{{ notification_volume }}"
+    data-notifications-enabled="{{ notifications_enabled|yesno:'true,false' }}"
+  {% endif %}
+>
+  <header class="site-header">
+    <nav class="nav wrap" aria-label="Main navigation">
+      <a class="brand" href="{% url 'home' %}"><span class="brand-mark">S</span><span>SkillBridge<span class="brand-accent"> AI</span></span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links">
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}"{% if request.resolver_match.url_name == 'dashboard' %} class="nav-active" aria-current="page"{% endif %}>Dashboard</a>
+          <a href="{% url 'rewards' %}"{% if request.resolver_match.url_name == 'rewards' %} class="nav-active" aria-current="page"{% endif %}>Rewards</a>
+          <a href="{% url 'skill_list' %}"{% if request.resolver_match.url_name == 'skill_list' or request.resolver_match.url_name == 'course_detail' or request.resolver_match.url_name == 'course_lesson_toggle' or request.resolver_match.url_name == 'my_skills' or request.resolver_match.url_name == 'skill_create' or request.resolver_match.url_name == 'skill_edit' %} class="nav-active" aria-current="page"{% endif %}>Explore</a>
+          <a href="{% url 'recommendations' %}"{% if request.resolver_match.url_name == 'recommendations' %} class="nav-active" aria-current="page"{% endif %}>Matches</a>
+          <a href="{% url 'requests' %}"{% if request.resolver_match.url_name == 'requests' or request.resolver_match.url_name == 'request_create' or request.resolver_match.url_name == 'request_update' %} class="nav-active" aria-current="page"{% endif %}>Requests</a>
+          <a href="{% url 'friends' %}"{% if request.resolver_match.url_name == 'friends' or request.resolver_match.url_name == 'friend_request_update' or request.resolver_match.url_name == 'friend_request_create' %} class="nav-active" aria-current="page"{% endif %}>Friends</a>
+          <a href="{% url 'notifications' %}"{% if request.resolver_match.url_name == 'notifications' %} class="nav-active" aria-current="page"{% endif %}>Alerts{% if unread_count %}<span class="nav-count">{{ unread_count }}</span>{% endif %}</a>
+          <a href="{% url 'history' %}"{% if request.resolver_match.url_name == 'history' %} class="nav-active" aria-current="page"{% endif %}>History</a>
+          <div class="nav-account">
+            <button class="account-trigger" id="account-trigger" type="button" aria-expanded="false" aria-controls="account-menu" aria-label="Open account menu">
+              <span class="account-avatar">{{ user.first_name|default:user.username|first|upper }}</span>
+              <span class="account-name">{{ user.first_name|default:user.username }}</span>
+              <span class="account-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="account-menu" id="account-menu" hidden>
+              <div class="account-menu-heading">
+                <span class="account-avatar account-avatar-large">{{ user.first_name|default:user.username|first|upper }}</span>
+                <span><strong>{{ user.first_name|default:user.username }}</strong><small>{{ user.email }}</small></span>
+              </div>
+              <a href="{% url 'profile' %}"><span>◉</span> View profile</a>
+              <a href="{% url 'profile_edit' %}"><span>✎</span> Edit profile</a>
+              <a href="{% url 'account_settings' %}"><span>⚙</span> Settings</a>
+              <a href="{% url 'password_change' %}"><span>⌑</span> Change password</a>
+              <a href="{% url 'manage_account' %}"><span>▤</span> Manage account</a>
+              <div class="account-menu-divider"></div>
+              <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="account-logout" type="submit"><span>↪</span> Log out</button></form>
+            </div>
+          </div>
+        {% else %}
+          <a href="{% url 'login' %}">Log in</a>
+          <a class="button button-small" href="{% url 'register' %}">Join the community</a>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+  <main>
+    {% if messages %}
+      <div class="wrap message-stack" aria-live="polite">
+        {% for message in messages %}<div class="message message-{{ message.tags }}">{{ message }}<button type="button" class="message-close" aria-label="Dismiss message">×</button></div>{% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer"><div class="wrap footer-inner"><a class="brand footer-brand" href="{% url 'home' %}"><span class="brand-mark">S</span><span>SkillBridge<span class="brand-accent"> AI</span></span></a><p>Learn from each other. Grow together.</p><span>Made for student communities</span></div></footer>
+</body>
+</html>

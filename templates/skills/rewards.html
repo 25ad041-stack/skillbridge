@@ -1,0 +1,34 @@
+{% extends "skills/base.html" %}
+{% block title %}Rewards · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap"><div><span class="eyebrow">YOUR LEARNING MILESTONES</span><h1>Your <span class="gradient-text">rewards.</span></h1><p>Celebrate your contributions and see what you can earn next.</p></div><a class="button button-light" href="{% url 'leaderboard' %}">View leaderboard</a></section>
+<section class="wrap stats-grid">
+  <article class="stat-card"><span class="stat-icon mint">★</span><div><strong>{{ profile.points }}</strong><span>Points earned</span></div></article>
+  <article class="stat-card"><span class="stat-icon peach">✦</span><div><strong>{{ earned_badges|length }}</strong><span>Badges earned</span></div></article>
+  <article class="stat-card"><span class="stat-icon mint">₹</span><div><strong>₹{{ cashback_balance }}</strong><span>Cashback balance</span></div></article>
+</section>
+<section class="wrap dashboard-grid">
+  <div class="dashboard-main">
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">READY TO CLAIM</span><h2>Login bonus · 5 points each</h2></div></div>
+      {% for login in claimable_logins %}<div class="reward-event"><div><strong>5 points available</strong><small>Claim your bonus for this sign-in</small></div><form method="post" action="{% url 'claim_login_points' login.pk %}">{% csrf_token %}<button class="button button-small" type="submit">Claim 5 points</button></form></div>{% empty %}<p class="muted small">No login bonuses waiting. Your next sign-in will add a 5-point bonus to claim.</p>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">COURSE CASHBACK</span><h2>Complete a level, claim cashback</h2></div></div>
+      <div class="cashback-tiers">{% for level, amount in cashback_tiers.items %}<div><strong>{{ level|title }}</strong><span>₹{{ amount }}</span></div>{% endfor %}</div>
+      <p class="muted small">Complete every lesson in a course level to unlock its cashback. Claims are added to your in-app balance; no bank or UPI transfer is made.</p>
+      {% for cashback in cashback_rewards %}<div class="reward-event"><div><strong>{{ cashback.course.name }} · {{ cashback.get_level_display }}</strong><small>₹{{ cashback.amount }} · {% if cashback.claimed_at %}Added {{ cashback.claimed_at|date:"M j, Y" }}{% else %}Ready to claim{% endif %}</small></div>{% if cashback.claimed_at %}<strong>Claimed</strong>{% else %}<form method="post" action="{% url 'claim_cashback' cashback.pk %}">{% csrf_token %}<button class="button button-small" type="submit">Claim ₹{{ cashback.amount }}</button></form>{% endif %}</div>{% empty %}<p class="muted small">Finish a full course level to unlock your first cashback reward.</p>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">UNLOCKED</span><h2>Your badges</h2></div></div>
+      {% for earned in earned_badges %}<div class="badge-row"><span>{{ earned.badge.icon }}</span><div><strong>{{ earned.badge.name }}</strong><small>{{ earned.badge.description }}</small></div></div>{% empty %}<p class="muted small">Complete a session or milestone to start earning badges.</p>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">POINTS HISTORY</span><h2>Recent rewards</h2></div></div>
+      {% for event in reward_events %}<div class="reward-event"><div><strong>{% if event.source_type == "session" %}Completed a learning session{% elif event.source_type == "milestone" %}Completed a roadmap milestone{% elif event.source_type == "login" %}Claimed a login bonus{% else %}Learning activity{% endif %}</strong><small>{{ event.created_at|date:"M j, Y" }}</small></div><strong>+{{ event.points }} pts</strong></div>{% empty %}<p class="muted small">Your points history will appear here when you claim a login bonus or earn points.</p>{% endfor %}
+    </div>
+  </div>
+  <aside class="dashboard-side">
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">UP NEXT</span><h2>Badges to earn</h2></div></div>
+      {% for badge in available_badges %}<div class="badge-row"><span>{{ badge.icon }}</span><div><strong>{{ badge.name }}</strong><small>{{ badge.description }} · {{ badge.points_required }} points</small></div></div>{% empty %}<p class="muted small">You’ve earned every available badge. Keep learning for more!</p>{% endfor %}
+    </div>
+    <div class="leaderboard-note"><span>★</span><p><strong>How rewards work</strong><br>Each participant earns 10 points when a session is completed. Completing a roadmap milestone earns 5 points. Each activity awards points only once.</p></div>
+  </aside>
+</section>
+{% endblock %}

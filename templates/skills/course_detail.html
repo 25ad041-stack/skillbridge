@@ -1,0 +1,35 @@
+{% extends "skills/base.html" %}
+{% block title %}{{ course.name }} syllabus · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap course-heading">
+  <div><a class="back-link" href="{% url 'skill_list' %}">← Explore courses</a><span class="eyebrow">{{ course.category|upper }} COURSE</span><h1>{{ course.name }} <span class="gradient-text">syllabus.</span></h1><p>{{ course.description }}</p></div>
+  <span class="course-icon course-icon-large">{{ course.icon }}</span>
+</section>
+<section class="wrap course-content">
+  <div class="level-tabs" role="navigation" aria-label="Course syllabus level">
+    {% for value,label in levels %}
+      <a class="level-tab{% if selected_level == value %} level-tab-active{% endif %}" href="{% url 'course_detail' course.slug %}?level={{ value }}" {% if selected_level == value %}aria-current="page"{% endif %}>{{ label }}<small>{% if value == "beginner" %}Start here{% elif value == "intermediate" %}Build skills{% else %}Go further{% endif %}</small></a>
+    {% endfor %}
+  </div>
+  <div class="syllabus-header"><div><span class="eyebrow">{{ selected_level|upper }} LEARNING PATH</span><h2>{{ selected_level|title }} syllabus</h2><p>Work through lessons in order. Each lesson includes a short explanation and a practical exercise.</p></div><span class="syllabus-count">{{ completed_count }}/{{ lessons|length }} completed</span></div>
+  <div class="lesson-list">
+    {% for lesson in lessons %}
+      <article class="lesson-card{% if lesson.is_completed %} lesson-complete{% endif %}">
+        <div class="lesson-number">{% if lesson.is_completed %}✓{% else %}{{ forloop.counter|stringformat:"02d" }}{% endif %}</div>
+        <div class="lesson-body">
+          <h3>{{ lesson.title }}</h3>
+          <p>{{ lesson.explanation }}</p>
+          <div class="lesson-practice"><strong>Try it:</strong> {{ lesson.practice }}</div>
+        </div>
+        <form method="post" action="{% url 'course_lesson_toggle' course.slug lesson.pk %}">
+          {% csrf_token %}<input type="hidden" name="level" value="{{ selected_level }}">
+          <button class="button button-small{% if lesson.is_completed %} button-light{% endif %}" type="submit">{% if lesson.is_completed %}Completed · Undo{% else %}Mark complete{% endif %}</button>
+        </form>
+      </article>
+    {% empty %}
+      <div class="empty-state panel"><h3>This level’s syllabus is being prepared.</h3><p>Choose another level or check back later.</p></div>
+    {% endfor %}
+  </div>
+  <div class="course-next"><span>Learning at another level?</span>{% for value,label in levels %}{% if value != selected_level %}<a class="text-link" href="{% url 'course_detail' course.slug %}?level={{ value }}">{{ label }} →</a>{% endif %}{% endfor %}</div>
+</section>
+{% endblock %}

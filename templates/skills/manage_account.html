@@ -1,0 +1,25 @@
+{% extends "skills/base.html" %}
+{% block title %}Manage account · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap">
+  <div><span class="eyebrow">ACCOUNT CENTER</span><h1>Manage your <span class="gradient-text">account.</span></h1><p>Your student account details and quick links, all in one place.</p></div>
+</section>
+<section class="wrap manage-layout">
+  <div class="panel account-summary">
+    <span class="account-avatar account-avatar-xl">{{ user.first_name|default:user.username|first|upper }}</span>
+    <div><span class="eyebrow">STUDENT ACCOUNT</span><h2>{{ user.get_full_name|default:user.username }}</h2><p>{{ user.email|default:"Add an email address to your profile" }}</p></div>
+  </div>
+  <div class="panel account-details">
+    <div class="panel-heading"><div><span class="eyebrow">ACCOUNT OVERVIEW</span><h2>Your details</h2></div></div>
+    <div class="settings-detail"><span>Username</span><strong>{{ user.username }}</strong></div>
+    <div class="settings-detail"><span>College</span><strong>{{ profile.college|default:"Not added" }}</strong></div>
+    <div class="settings-detail"><span>Member since</span><strong>{{ profile.created_at|date:"F Y" }}</strong></div>
+    <div class="settings-detail"><span>Points</span><strong>{{ profile.points }}</strong></div>
+    <div class="account-actions">
+      <a class="button" href="{% url 'profile_edit' %}">Edit profile</a>
+      <a class="button button-light" href="{% url 'account_settings' %}">Settings</a>
+      <a class="button button-light" href="{% url 'password_change' %}">Change password</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

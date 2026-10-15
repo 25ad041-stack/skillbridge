@@ -1,0 +1,6 @@
+{% extends "skills/base.html" %}
+{% block title %}My skills · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap"><div><span class="eyebrow">YOUR CONTRIBUTION</span><h1>Skills you <span class="gradient-text">share.</span></h1><p>Manage the skills you can teach or want to learn.</p></div><a class="button" href="{% url 'skill_create' %}">＋ Add a skill</a></section>
+<section class="wrap"><div class="panel table-panel">{% for skill in skills %}<div class="skill-row"><div class="grow"><strong>{{ skill.name }}</strong><p>{{ skill.category }} · {{ skill.get_level_display }}</p><small class="muted">{{ skill.description|truncatewords:18 }}</small></div><span class="pill pill-{{ skill.mode }}">{{ skill.get_mode_display }}</span><div class="row-actions"><a class="button button-light button-small" href="{% url 'skill_edit' skill.pk %}">Edit</a><form method="post" action="{% url 'skill_delete' skill.pk %}" data-confirm="Delete this skill listing?">{% csrf_token %}<button class="button button-danger button-small" type="submit">Delete</button></form></div></div>{% empty %}<div class="empty-state"><h3>Your skill story starts here.</h3><p>Add a skill you know or one you would love to learn.</p><a class="button" href="{% url 'skill_create' %}">Add a skill</a></div>{% endfor %}</div></section>
+{% endblock %}

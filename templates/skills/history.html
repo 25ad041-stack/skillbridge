@@ -1,0 +1,30 @@
+{% extends "skills/base.html" %}
+{% block title %}History · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap"><div><span class="eyebrow">YOUR LEARNING ACTIVITY</span><h1>Your <span class="gradient-text">history.</span></h1><p>Review completed learning, course lessons, and rewards.</p></div></section>
+{% if not has_history %}
+<section class="wrap panel empty-state history-empty"><span>◷</span><h3>No history yet.</h3><p>Your completed learning and claimed rewards will appear here.</p></section>
+{% else %}
+<section class="wrap dashboard-grid">
+  <div class="dashboard-main">
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">LEARNING SESSIONS</span><h2>Completed sessions</h2></div></div>
+      {% for session in completed_sessions %}<div class="reward-event"><div><strong>{{ session.learning_request.skill.name }} session completed</strong><small>{{ session.starts_at|date:"M j, Y · g:i A" }}</small></div></div>{% empty %}<p class="muted small">Completed sessions will appear here.</p>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">COURSES</span><h2>Completed lessons</h2></div></div>
+      {% for completion in completed_lessons %}<div class="reward-event"><div><strong>{{ completion.lesson.title }}</strong><small>{{ completion.lesson.course.name }} · {{ completion.lesson.get_level_display }} · {{ completion.completed_at|date:"M j, Y · g:i A" }}</small></div></div>{% empty %}<p class="muted small">Completed course lessons will appear here.</p>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">ROADMAP</span><h2>Completed milestones</h2></div></div>
+      {% for milestone in completed_milestones %}<div class="reward-event"><div><strong>{{ milestone.title }}</strong><small>{{ milestone.progress.skill_name }} · {{ milestone.completed_at|date:"M j, Y · g:i A" }}</small></div></div>{% empty %}<p class="muted small">Completed milestones will appear here.</p>{% endfor %}
+    </div>
+  </div>
+  <aside class="dashboard-side">
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">POINTS</span><h2>Reward activity</h2></div></div>
+      {% for event in reward_events %}<div class="reward-event"><div><strong>{% if event.source_type == "session" %}Completed a learning session{% elif event.source_type == "milestone" %}Completed a roadmap milestone{% elif event.source_type == "login" %}Claimed a login bonus{% else %}Learning activity{% endif %}</strong><small>{{ event.created_at|date:"M j, Y · g:i A" }}</small></div><strong>+{{ event.points }} pts</strong></div>{% empty %}<p class="muted small">Claimed points will appear here.</p>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">CASHBACK</span><h2>Cashback history</h2></div></div>
+      {% for cashback in cashback_rewards %}<div class="reward-event"><div><strong>{{ cashback.course.name }} · {{ cashback.get_level_display }}</strong><small>{% if cashback.claimed_at %}Added to app balance {{ cashback.claimed_at|date:"M j, Y" }}{% else %}Earned {{ cashback.created_at|date:"M j, Y" }} · Ready to claim{% endif %}</small></div><strong>₹{{ cashback.amount }}</strong></div>{% empty %}<p class="muted small">Course cashback activity will appear here.</p>{% endfor %}
+    </div>
+  </aside>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "skills/base.html" %}
+{% block title %}Friends · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap"><div><span class="eyebrow">YOUR COMMUNITY</span><h1>Your <span class="gradient-text">friends.</span></h1><p>Manage friend requests and see your learning community.</p></div></section>
+<section class="wrap dashboard-grid">
+  <div class="dashboard-main">
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">GROW YOUR COMMUNITY</span><h2>Find students</h2></div></div>
+      <form class="filter-bar friend-search" method="get" action="{% url 'friends' %}"><div class="search-field"><span aria-hidden="true">⌕</span><input type="search" name="q" value="{{ student_query }}" placeholder="Search by name or username" aria-label="Search students"></div><button class="button button-small" type="submit">Search</button></form>
+      {% for student in students %}<div class="friend-row"><a class="person-avatar" href="{% url 'student_profile' student.username %}">{{ student.first_name|default:student.username|first|upper }}</a><div class="grow"><a href="{% url 'student_profile' student.username %}"><strong>{{ student.get_full_name|default:student.username }}</strong></a><small>@{{ student.username }}</small></div><form method="post" action="{% url 'friend_request_create' student.username %}">{% csrf_token %}<button class="button button-small" type="submit">Add friend</button></form></div>{% empty %}<p class="muted small">{% if student_query %}No students match that search, or everyone matching it is already connected or has a pending request.{% else %}No students available to add right now.{% endif %}</p>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">WAITING FOR YOU</span><h2>Incoming requests</h2></div></div>
+      {% for friend_request in incoming_requests %}<div class="friend-row"><a class="person-avatar" href="{% url 'student_profile' friend_request.sender.username %}">{{ friend_request.sender.first_name|default:friend_request.sender.username|first|upper }}</a><div class="grow"><a href="{% url 'student_profile' friend_request.sender.username %}"><strong>{{ friend_request.sender.get_full_name|default:friend_request.sender.username }}</strong></a><small>Sent {{ friend_request.created_at|date:"M j, Y" }}</small></div><form method="post" action="{% url 'friend_request_update' friend_request.pk 'accept' %}">{% csrf_token %}<button class="button button-small" type="submit">Accept</button></form><form method="post" action="{% url 'friend_request_update' friend_request.pk 'decline' %}">{% csrf_token %}<button class="button button-light button-small" type="submit">Decline</button></form></div>{% empty %}<p class="muted small">No incoming friend requests.</p>{% endfor %}
+    </div>
+    <div class="panel"><div class="panel-heading"><div><span class="eyebrow">SENT BY YOU</span><h2>Pending requests</h2></div></div>
+      {% for friend_request in outgoing_requests %}<div class="friend-row"><a class="person-avatar" href="{% url 'student_profile' friend_request.receiver.username %}">{{ friend_request.receiver.first_name|default:friend_request.receiver.username|first|upper }}</a><div class="grow"><strong>{{ friend_request.receiver.get_full_name|default:friend_request.receiver.username }}</strong><small>Request sent {{ friend_request.created_at|date:"M j, Y" }}</small></div><span class="status status-accepted">Pending</span></div>{% empty %}<p class="muted small">No pending requests sent.</p>{% endfor %}
+    </div>
+  </div>
+  <aside class="dashboard-side"><div class="panel"><div class="panel-heading"><div><span class="eyebrow">CONNECTED</span><h2>Your friends</h2></div></div>
+    {% for friend in friend_users %}<div class="friend-row"><a class="person-avatar" href="{% url 'student_profile' friend.username %}">{{ friend.first_name|default:friend.username|first|upper }}</a><div class="grow"><a href="{% url 'student_profile' friend.username %}"><strong>{{ friend.get_full_name|default:friend.username }}</strong></a><small>{{ friend.student_profile.college|default:"Student community" }}</small></div></div>{% empty %}<p class="muted small">Accepted friends will appear here. Visit a student profile to send a request.</p>{% endfor %}
+  </div></aside>
+</section>
+{% endblock %}

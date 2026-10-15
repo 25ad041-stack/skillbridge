@@ -1,0 +1,24 @@
+{% extends "skills/base.html" %}
+{% block title %}Learning requests · SkillBridge AI{% endblock %}
+{% block content %}
+<section class="page-heading wrap"><div><span class="eyebrow">MAKE LEARNING HAPPEN</span><h1>Learning <span class="gradient-text">requests.</span></h1><p>See who's ready to learn with you and check on your own requests.</p></div></section>
+<section class="wrap request-hub">
+  <div class="request-boxes">
+    <a class="request-box{% if active_box == 'incoming' %} request-box-active{% endif %}" href="{% url 'requests' %}?box=incoming" {% if active_box == 'incoming' %}aria-current="page"{% endif %}>
+      <span class="request-box-icon">↓</span><span class="request-box-label"><small>REQUESTS TO YOU</small><strong>Incoming</strong><span>People who asked to learn from you</span></span><span class="request-box-count">{{ incoming_count }}</span>
+    </a>
+    <a class="request-box{% if active_box == 'sent' %} request-box-active{% endif %}" href="{% url 'requests' %}?box=sent" {% if active_box == 'sent' %}aria-current="page"{% endif %}>
+      <span class="request-box-icon request-sent-icon">↑</span><span class="request-box-label"><small>YOUR REQUESTS</small><strong>Sent</strong><span>People you asked to learn from</span></span><span class="request-box-count">{{ sent_count }}</span>
+    </a>
+  </div>
+  {% if active_box == "incoming" %}
+    <div class="panel request-list-panel"><div class="panel-heading"><div><span class="eyebrow">YOUR INBOX</span><h2>Incoming requests</h2></div><span class="status status-pending">{{ incoming_count }} total</span></div>
+      {% for item in received %}<article class="request-card"><div class="request-head"><strong>{{ item.learner.get_full_name|default:item.learner.username }}</strong><span class="status status-{{ item.status }}">{{ item.get_status_display }}</span></div><p>Wants to learn <strong>{{ item.skill.name }}</strong> from you.</p>{% if item.message %}<blockquote>{{ item.message }}</blockquote>{% endif %}<small class="muted">{{ item.created_at|date:"M d, Y · g:i A" }}</small>{% if item.status == "pending" %}<div class="row-actions"><form method="post" action="{% url 'request_update' item.pk 'accept' %}">{% csrf_token %}<button class="button button-small" type="submit">Accept</button></form><form method="post" action="{% url 'request_update' item.pk 'reject' %}">{% csrf_token %}<button class="button button-light button-small" type="submit">Decline</button></form></div>{% elif item.status == "accepted" %}<p><a class="text-link" href="{% url 'session_create' item.pk %}">Schedule a session →</a></p>{% endif %}</article>{% empty %}<div class="empty-state"><span>✉</span><h3>No incoming requests yet.</h3><p>When someone asks to learn from you, their name and message will appear in this inbox.</p></div>{% endfor %}
+    </div>
+  {% else %}
+    <div class="panel request-list-panel"><div class="panel-heading"><div><span class="eyebrow">YOUR OUTBOX</span><h2>Requests you sent</h2></div><span class="status status-accepted">{{ sent_count }} total</span></div>
+      {% for item in sent %}<article class="request-card"><div class="request-head"><strong>{{ item.skill.name }}</strong><span class="status status-{{ item.status }}">{{ item.get_status_display }}</span></div><p>Sent to <strong>{{ item.teacher.get_full_name|default:item.teacher.username }}</strong></p>{% if item.message %}<blockquote>{{ item.message }}</blockquote>{% endif %}<small class="muted">{{ item.created_at|date:"M d, Y · g:i A" }}</small>{% if item.status == "accepted" %}<p><a class="text-link" href="{% url 'session_create' item.pk %}">Schedule a session →</a></p>{% endif %}</article>{% empty %}<div class="empty-state"><span>↗</span><h3>You haven't sent any requests.</h3><p>Explore courses or student skills to find someone you would like to learn from.</p><a class="button button-light" href="{% url 'skill_list' %}">Explore skills →</a></div>{% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
